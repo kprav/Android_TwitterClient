@@ -2,22 +2,24 @@ package com.codepath.apps.twitterclient.activities;
 
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
+import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 
 import com.codepath.apps.twitterclient.R;
 import com.codepath.apps.twitterclient.adapters.TweetsArrayAdapter;
 import com.codepath.apps.twitterclient.application.TwitterApplication;
 import com.codepath.apps.twitterclient.application.TwitterClient;
 import com.codepath.apps.twitterclient.fragments.ComposeTweetFragment;
-import com.codepath.apps.twitterclient.helpers.DateUtilites;
 import com.codepath.apps.twitterclient.helpers.EndlessScrollListener;
 import com.codepath.apps.twitterclient.helpers.NetworkAvailabilityCheck;
 import com.codepath.apps.twitterclient.models.Tweet;
@@ -40,6 +42,8 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
     private ListView lvTweets;
     private boolean status;
 
+    private ImageView scrollToTop;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +51,10 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#55ACEE")));
+            getSupportActionBar().setDisplayShowCustomEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(false);
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+            setupScrollToTop(getSupportActionBar());
         }
 
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
@@ -59,6 +67,22 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
         setupListView();
         setupSwipeRefresh();
         getLoggedInUserInfo();
+    }
+
+    private void setupScrollToTop(ActionBar actionBar) {
+        scrollToTop = new ImageView(this);
+        scrollToTop.setClickable(true);
+        scrollToTop.setEnabled(true);
+        scrollToTop.setBackgroundResource(R.drawable.ic_twitter_white);;
+        RelativeLayout relative = new RelativeLayout(this);
+        relative.addView(scrollToTop);
+        actionBar.setCustomView(relative);
+        scrollToTop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                lvTweets.smoothScrollToPosition(0);
+            }
+        });
     }
 
     private void setupListView() {

@@ -1,7 +1,6 @@
 package com.codepath.apps.twitterclient.helpers;
 
 import android.text.format.DateUtils;
-import android.util.Log;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -36,7 +35,6 @@ public class DateUtilites {
         Date date = stringToDate(time);
         long epoch = dateToEpoch(date);
         String relativeCreationTime = getRelativeTime(epoch);
-        Log.d("TIME", relativeCreationTime);
         return format(relativeCreationTime);
     }
 
