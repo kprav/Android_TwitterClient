@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,6 +32,7 @@ import java.util.ArrayList;
 
 public class TimelineActivity extends AppCompatActivity implements ComposeTweetFragment.OnFragmentInteractionListener {
 
+    private SwipeRefreshLayout swipeContainer;
     private TwitterClient client;
     private User loggedInUser;
     private ArrayList<Tweet> tweetsList;
@@ -47,14 +49,15 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
             getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#55ACEE")));
         }
 
+        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
         lvTweets = (ListView) findViewById(R.id.lvTweets);
         tweetsList = new ArrayList<Tweet>();
         tweetsAdapter = new TweetsArrayAdapter(this, tweetsList);
         lvTweets.setAdapter(tweetsAdapter);
 
-        setupListView();
-
         client = TwitterApplication.getRestClient();
+        setupListView();
+        setupSwipeRefresh();
         getLoggedInUserInfo();
     }
 
@@ -81,6 +84,23 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
         });
     }
 
+    private void setupSwipeRefresh() {
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Make sure to call swipeContainer.setRefreshing(false)
+                // once the network request has completed successfully.
+                populateTimeline(true);
+            }
+        });
+        // Configure the refreshing colors
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+
+    }
+
     private void getLoggedInUserInfo() {
         if (isNetworkAvailable()) {
             client.getLoggerInUserInfo(new JsonHttpResponseHandler() {
@@ -104,6 +124,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
     private boolean populateTimeline(boolean reset) {
         if (!isNetworkAvailable()) {
             // hideProgressBar();
+            swipeContainer.setRefreshing(false);
             return false;
         }
 
@@ -137,6 +158,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
             }
         });
 
+        swipeContainer.setRefreshing(false);
         return status;
     }
 
