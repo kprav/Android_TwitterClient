@@ -36,7 +36,7 @@ The following **bonus** features are implemented:
 The following **additional** features are implemented:
 
 * [x] Clicking ActionBar icon in timeline will scroll to top
-* [x] User can **select "retweet" icon from detail view to respond to a tweet**
+* [x] User can **select "retweet" icon from detail view to retweet a tweet**
 * [x] Check for network before fetching or pushing to server
 * [x] ViewHolder Pattern for the custom adapter
 
