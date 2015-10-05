@@ -1,5 +1,6 @@
 package com.codepath.apps.twitterclient.activities;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -86,6 +88,17 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
     }
 
     private void setupListView() {
+        lvTweets.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Tweet tweet = tweetsList.get(position);
+                Intent intent = new Intent(TimelineActivity.this, TweetDetailActivity.class);
+                intent.putExtra("tweet", tweet);
+                if (isNetworkAvailable())
+                    startActivity(intent);
+            }
+        });
+
         lvTweets.setOnScrollListener(new EndlessScrollListener() {
             // Triggered only when new data needs to be appended to the list
             // Load more data for paginating and append the new data items to the adapter.

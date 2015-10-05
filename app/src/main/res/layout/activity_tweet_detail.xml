@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff"
+    android:padding="10dp"
+    tools:context="com.codepath.apps.twitterclient.activities.TweetDetailActivity">
+
+    <ImageView
+        android:id="@+id/ivProfileImageDetail"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:paddingBottom="5dp"/>
+
+    <TextView
+        android:id="@+id/tvUserNameDetail"
+        android:layout_width="wrap_content"
+        android:layout_height="32dp"
+        android:layout_alignTop="@+id/ivProfileImageDetail"
+        android:layout_toEndOf="@+id/ivProfileImageDetail"
+        android:layout_toRightOf="@+id/ivProfileImageDetail"
+        android:gravity="bottom"
+        android:paddingLeft="5dp"
+        android:text="@string/label_user_name"
+        android:textColor="#000000"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/tvScreenNameDetail"
+        android:layout_width="wrap_content"
+        android:layout_height="32dp"
+        android:layout_below="@+id/tvUserNameDetail"
+        android:layout_toEndOf="@+id/ivProfileImageDetail"
+        android:layout_toRightOf="@+id/ivProfileImageDetail"
+        android:gravity="top"
+        android:paddingLeft="5dp"
+        android:paddingTop="5dp"
+        android:text="@string/label_screen_name"
+        android:textColor="#90A4AE"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/tvTweetDetail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/ivProfileImageDetail"
+        android:layout_marginTop="5dp"
+        android:autoLink="all"
+        android:paddingBottom="5dp"
+        android:textColor="#000000"
+        android:text="@string/label_tweet_body"/>
+
+    <RelativeLayout
+        android:id="@+id/rlInlinePhotoDetail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/tvTweetDetail"
+        android:layout_alignStart="@+id/tvTweetDetail"
+        android:layout_below="@+id/tvTweetDetail"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:paddingEnd="10dp"
+        android:paddingRight="10dp" />
+
+</RelativeLayout>

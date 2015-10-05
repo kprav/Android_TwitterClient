@@ -16,5 +16,7 @@
     <string name="label_tweet">Tweet</string>
     <string name="label_tweet_hint">What\'s happening?</string>
     <string name="label_max_chars">140</string>
+    <string name="title_activity_tweet_detail">TweetDetailActivity</string>
+    <string name="action_settings">Settings</string>
 
 </resources>

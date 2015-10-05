@@ -1,10 +1,13 @@
 package com.codepath.apps.twitterclient.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Entity {
+public class Entity implements Parcelable {
     private String mediaUrl;
     private String mediaUrlThumb;
     private String mediaUrlSmall;
@@ -75,4 +78,41 @@ public class Entity {
         }
         return e;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.mediaUrl);
+        dest.writeString(this.mediaUrlThumb);
+        dest.writeString(this.mediaUrlSmall);
+        dest.writeString(this.mediaUrlMedium);
+        dest.writeString(this.mediaUrlLarge);
+        dest.writeString(this.mediaType);
+    }
+
+    public Entity() {
+    }
+
+    protected Entity(Parcel in) {
+        this.mediaUrl = in.readString();
+        this.mediaUrlThumb = in.readString();
+        this.mediaUrlSmall = in.readString();
+        this.mediaUrlMedium = in.readString();
+        this.mediaUrlLarge = in.readString();
+        this.mediaType = in.readString();
+    }
+
+    public static final Parcelable.Creator<Entity> CREATOR = new Parcelable.Creator<Entity>() {
+        public Entity createFromParcel(Parcel source) {
+            return new Entity(source);
+        }
+
+        public Entity[] newArray(int size) {
+            return new Entity[size];
+        }
+    };
 }

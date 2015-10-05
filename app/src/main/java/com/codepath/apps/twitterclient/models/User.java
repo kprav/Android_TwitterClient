@@ -1,9 +1,12 @@
 package com.codepath.apps.twitterclient.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class User {
+public class User implements Parcelable {
     private Long userId;
     private String userName;
     private String screenName;
@@ -41,4 +44,37 @@ public class User {
         }
         return u;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeValue(this.userId);
+        dest.writeString(this.userName);
+        dest.writeString(this.screenName);
+        dest.writeString(this.profleImageUrl);
+    }
+
+    public User() {
+    }
+
+    protected User(Parcel in) {
+        this.userId = (Long) in.readValue(Long.class.getClassLoader());
+        this.userName = in.readString();
+        this.screenName = in.readString();
+        this.profleImageUrl = in.readString();
+    }
+
+    public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
+        public User createFromParcel(Parcel source) {
+            return new User(source);
+        }
+
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
 }

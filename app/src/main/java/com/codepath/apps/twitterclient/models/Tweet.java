@@ -1,5 +1,8 @@
 package com.codepath.apps.twitterclient.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.codepath.apps.twitterclient.application.TwitterClient;
 import com.codepath.apps.twitterclient.helpers.DateUtilites;
 
@@ -11,7 +14,7 @@ import java.util.ArrayList;
 
 // Parse the JSON + Store the data
 // Encapsulate state logic or display logic
-public class Tweet {
+public class Tweet implements Parcelable {
 
     // List out the attributes
     private User user;
@@ -19,6 +22,8 @@ public class Tweet {
     private long tweetId;
     private String body;
     private String createdAt;
+    private String formattedCreatedAt;
+    private String relativeCreationTime;
     private boolean favorited;
     private boolean retweeted;
     private int retweetCount;
@@ -41,6 +46,14 @@ public class Tweet {
 
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public void setFormattedCreatedAt(String formattedCreatedAt) {
+        this.formattedCreatedAt = formattedCreatedAt;
+    }
+
+    public void setRelativeCreationTime(String relativeCreationTime) {
+        this.relativeCreationTime = relativeCreationTime;
     }
 
     public void setFavorited(boolean favorited) {
@@ -75,6 +88,14 @@ public class Tweet {
         return createdAt;
     }
 
+    public String getFormattedCreatedAt() {
+        return formattedCreatedAt;
+    }
+
+    public String getRelativeCreationTime() {
+        return relativeCreationTime;
+    }
+
     public boolean getFavorited() {
         return favorited;
     }
@@ -96,7 +117,9 @@ public class Tweet {
             // TODO: Check for null
             tweet.body = jsonObject.getString("text");
             tweet.tweetId = jsonObject.getLong("id");
-            tweet.createdAt = DateUtilites.getRelativeTime(jsonObject.getString("created_at"));
+            tweet.createdAt = jsonObject.getString("created_at");
+            tweet.formattedCreatedAt = DateUtilites.getFormattedTime(jsonObject.getString("created_at"));
+            tweet.relativeCreationTime = DateUtilites.getRelativeTime(jsonObject.getString("created_at"));
             tweet.favorited = jsonObject.getBoolean("favorited");
             tweet.retweeted = jsonObject.getBoolean("retweeted");
             tweet.retweetCount = jsonObject.getInt("retweet_count");
@@ -128,4 +151,49 @@ public class Tweet {
         }
         return tweets;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeParcelable(this.user, 0);
+        dest.writeParcelable(this.entity, 0);
+        dest.writeLong(this.tweetId);
+        dest.writeString(this.body);
+        dest.writeString(this.createdAt);
+        dest.writeString(this.formattedCreatedAt);
+        dest.writeString(this.relativeCreationTime);
+        dest.writeByte(favorited ? (byte) 1 : (byte) 0);
+        dest.writeByte(retweeted ? (byte) 1 : (byte) 0);
+        dest.writeInt(this.retweetCount);
+    }
+
+    public Tweet() {
+    }
+
+    protected Tweet(Parcel in) {
+        this.user = in.readParcelable(User.class.getClassLoader());
+        this.entity = in.readParcelable(Entity.class.getClassLoader());
+        this.tweetId = in.readLong();
+        this.body = in.readString();
+        this.createdAt = in.readString();
+        this.formattedCreatedAt = in.readString();
+        this.relativeCreationTime = in.readString();
+        this.favorited = in.readByte() != 0;
+        this.retweeted = in.readByte() != 0;
+        this.retweetCount = in.readInt();
+    }
+
+    public static final Parcelable.Creator<Tweet> CREATOR = new Parcelable.Creator<Tweet>() {
+        public Tweet createFromParcel(Parcel source) {
+            return new Tweet(source);
+        }
+
+        public Tweet[] newArray(int size) {
+            return new Tweet[size];
+        }
+    };
 }
