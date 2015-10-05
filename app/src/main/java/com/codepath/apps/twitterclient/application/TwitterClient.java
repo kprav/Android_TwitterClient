@@ -50,6 +50,7 @@ public class TwitterClient extends OAuthBaseClient {
         RequestParams params = new RequestParams();
         params.put("count", 50);
         params.put("since_id", 1);
+        params.put("include_entities", true);
         if (!reset)
             params.put("max_id", MAX_TWEET_ID + 1);
         else

@@ -7,9 +7,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.codepath.apps.twitterclient.R;
+import com.codepath.apps.twitterclient.helpers.DeviceDimensionsHelper;
 import com.codepath.apps.twitterclient.models.Tweet;
 import com.squareup.picasso.Picasso;
 
@@ -28,12 +30,14 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet> {
     private static Typeface roboto_black;
 
     // View lookup cache for the view holder pattern
+    // TODO: Improve viewholder during inflation of rlInlinePhoto
     private static class ViewHolder {
         ImageView ivProfileImage;
         TextView tvUserName;
         TextView tvScreenName;
         TextView tvCreationTime;
         TextView tvBody;
+        RelativeLayout rlInlinePhoto;
     }
 
     public TweetsArrayAdapter(Context context, List<Tweet> tweets) {
@@ -61,6 +65,7 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet> {
             viewHolder.tvScreenName = (TextView) convertView.findViewById(R.id.tvScreenName);
             viewHolder.tvBody = (TextView) convertView.findViewById(R.id.tvBody);
             viewHolder.tvCreationTime = (TextView) convertView.findViewById(R.id.tvCreationTime);
+            viewHolder.rlInlinePhoto = (RelativeLayout) convertView.findViewById(R.id.rlInlinePhoto);
             viewHolder.tvUserName.setTypeface(roboto_bold);
             viewHolder.tvScreenName.setTypeface(roboto_light);
             viewHolder.tvBody.setTypeface(roboto_regular);
@@ -70,12 +75,30 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
+        // RelativeLayout rlInlinePhoto = (RelativeLayout) convertView.findViewById(R.id.rlInlinePhoto);
+        // rlInlinePhoto.removeAllViews();
+
+        viewHolder.rlInlinePhoto.removeAllViews();
         viewHolder.tvUserName.setText(tweet.getUser().getUserName());
         viewHolder.tvScreenName.setText(tweet.getUser().getScreenName());
         viewHolder.tvCreationTime.setText(tweet.getCreatedAt());
         viewHolder.tvBody.setText(tweet.getBody());
         viewHolder.ivProfileImage.setImageResource(android.R.color.transparent);
         Picasso.with(getContext()).load(tweet.getUser().getProfleImageUrl()).into(viewHolder.ivProfileImage);
+
+        if (tweet.getEntity() != null) {
+            String mediaUrl = tweet.getEntity().getMedaiUrlLarge();
+            LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View inlinePhotoView = layoutInflater.inflate(R.layout.inline_photo, null);
+            ImageView ivInlinePhoto = (ImageView) inlinePhotoView.findViewById(R.id.ivInlinePhoto);
+            Picasso.with(getContext()).load(mediaUrl).resize(DeviceDimensionsHelper.getDisplayWidth(getContext()), 0).into(ivInlinePhoto);
+            // rlInlinePhoto.addView(ivInlinePhoto);
+            viewHolder.rlInlinePhoto.addView(ivInlinePhoto);
+        } else {
+            viewHolder.tvBody.setPadding(0, 0, 10, 5);
+        }
+
+        // viewHolder.rlInlinePhoto = rlInlinePhoto;
 
         return convertView;
     }

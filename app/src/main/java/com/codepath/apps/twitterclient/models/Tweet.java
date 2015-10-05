@@ -15,12 +15,20 @@ public class Tweet {
 
     // List out the attributes
     private User user;
+    private Entity entity;
     private long tweetId;
     private String body;
     private String createdAt;
+    private boolean favorited;
+    private boolean retweeted;
+    private int retweetCount;
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public void setEntity(Entity entity) {
+        this.entity = entity;
     }
 
     public void setTweetId(long tweetId) {
@@ -35,8 +43,24 @@ public class Tweet {
         this.createdAt = createdAt;
     }
 
+    public void setFavorited(boolean favorited) {
+        this.favorited = favorited;
+    }
+
+    public void setRetweeted(boolean retweeted) {
+        this.retweeted = retweeted;
+    }
+
+    public void setRetweetCount(int retweetCount) {
+        this.retweetCount = retweetCount;
+    }
+
     public User getUser() {
         return user;
+    }
+
+    public Entity getEntity() {
+        return entity;
     }
 
     public long getTweetId() {
@@ -51,6 +75,18 @@ public class Tweet {
         return createdAt;
     }
 
+    public boolean getFavorited() {
+        return favorited;
+    }
+
+    public boolean getRetwweted() {
+        return retweeted;
+    }
+
+    public int getRetweetCount() {
+        return retweetCount;
+    }
+
     // Deserialize the JSON
     //  - Extract values from JSON
     //  - Construct the Tweet Object and return it
@@ -61,7 +97,11 @@ public class Tweet {
             tweet.body = jsonObject.getString("text");
             tweet.tweetId = jsonObject.getLong("id");
             tweet.createdAt = DateUtilites.getRelativeTime(jsonObject.getString("created_at"));
+            tweet.favorited = jsonObject.getBoolean("favorited");
+            tweet.retweeted = jsonObject.getBoolean("retweeted");
+            tweet.retweetCount = jsonObject.getInt("retweet_count");
             tweet.user = User.fromJSON(jsonObject.getJSONObject("user"));
+            tweet.entity = Entity.fromJSON(jsonObject.getJSONObject("entities"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
