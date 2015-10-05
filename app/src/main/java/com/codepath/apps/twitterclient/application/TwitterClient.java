@@ -1,15 +1,13 @@
 package com.codepath.apps.twitterclient.application;
 
-import org.scribe.builder.api.Api;
-import org.scribe.builder.api.FlickrApi;
-import org.scribe.builder.api.TwitterApi;
-
 import android.content.Context;
-import android.util.Log;
 
 import com.codepath.oauth.OAuthBaseClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+
+import org.scribe.builder.api.Api;
+import org.scribe.builder.api.TwitterApi;
 
 /*
  * 
@@ -60,7 +58,7 @@ public class TwitterClient extends OAuthBaseClient {
     }
 
     // Get Logged in user information
-    public void getLoggerInUserInfo(AsyncHttpResponseHandler handler) {
+    public void getLoggedInUserInfo(AsyncHttpResponseHandler handler) {
         String apiUrl = getApiUrl("account/verify_credentials.json");
         getClient().get(apiUrl, handler);
     }
@@ -70,9 +68,14 @@ public class TwitterClient extends OAuthBaseClient {
         String apiUrl = getApiUrl("statuses/update.json");
         RequestParams params = new RequestParams();
         params.put("status", status);
-        Log.d("BEFORE", "BEFORE");
         getClient().post(apiUrl, params, handler);
-        Log.d("AFTER", "AFTER");
+    }
+
+    // Retweet
+    public void reTweet(long tweetId, AsyncHttpResponseHandler handler) {
+        String subUrl = "statuses/retweet/" + tweetId + ".json";
+        String apiUrl = getApiUrl(subUrl);
+        getClient().post(apiUrl, handler);
     }
 
     public void getRateLimit(AsyncHttpResponseHandler handler) {

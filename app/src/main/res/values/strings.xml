@@ -18,5 +18,7 @@
     <string name="label_max_chars">140</string>
     <string name="title_activity_tweet_detail">TweetDetailActivity</string>
     <string name="action_settings">Settings</string>
+    <string name="label_retweet">Retweet</string>
+    <string name="label_reply">Reply</string>
 
 </resources>

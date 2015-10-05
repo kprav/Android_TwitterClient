@@ -75,7 +75,8 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
         scrollToTop = new ImageView(this);
         scrollToTop.setClickable(true);
         scrollToTop.setEnabled(true);
-        scrollToTop.setBackgroundResource(R.drawable.ic_twitter_white);;
+        scrollToTop.setBackgroundResource(R.drawable.ic_twitter_white);
+        ;
         RelativeLayout relative = new RelativeLayout(this);
         relative.addView(scrollToTop);
         actionBar.setCustomView(relative);
@@ -94,8 +95,15 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
                 Tweet tweet = tweetsList.get(position);
                 Intent intent = new Intent(TimelineActivity.this, TweetDetailActivity.class);
                 intent.putExtra("tweet", tweet);
-                if (isNetworkAvailable())
+                if (isNetworkAvailable()) {
                     startActivity(intent);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    populateTimeline(true);
+                }
             }
         });
 
@@ -140,7 +148,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
 
     private void getLoggedInUserInfo() {
         if (isNetworkAvailable()) {
-            client.getLoggerInUserInfo(new JsonHttpResponseHandler() {
+            client.getLoggedInUserInfo(new JsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Log.d("USER", response.toString());
@@ -164,23 +172,10 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
             swipeContainer.setRefreshing(false);
             return false;
         }
-
         if (reset) {
             tweetsAdapter.clear();
         }
-
         client.getHomeTimeline(reset, new JsonHttpResponseHandler() {
-
-            // TODO: Remove this block
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                String first = response.toString().substring(0, 4000);
-                String second = response.toString().substring(4000, response.toString().length());
-                Log.d("FIRST", first);
-                Log.d("SECOND", second);
-                status = false;
-            }
-
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 Log.d("DEBUG", response.toString());
@@ -194,7 +189,6 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
                 status = false;
             }
         });
-
         swipeContainer.setRefreshing(false);
         return status;
     }

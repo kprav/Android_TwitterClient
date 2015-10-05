@@ -6,6 +6,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,12 +16,21 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.codepath.apps.twitterclient.R;
+import com.codepath.apps.twitterclient.application.TwitterApplication;
+import com.codepath.apps.twitterclient.application.TwitterClient;
 import com.codepath.apps.twitterclient.helpers.DeviceDimensionsHelper;
+import com.codepath.apps.twitterclient.helpers.NetworkAvailabilityCheck;
 import com.codepath.apps.twitterclient.models.Tweet;
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.squareup.picasso.Picasso;
+
+import org.apache.http.Header;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class TweetDetailActivity extends AppCompatActivity {
 
+    private TwitterClient client;
     private Tweet tweet;
     private ImageView ivProfileImageDetail;
     private TextView tvUserNameDetail;
@@ -35,6 +45,8 @@ public class TweetDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tweet_detail);
+
+        client = TwitterApplication.getRestClient();
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#55ACEE")));
@@ -104,6 +116,28 @@ public class TweetDetailActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_retweet) {
+            if (!tweet.getRetwweted()) {
+                if (NetworkAvailabilityCheck.isNetworkAvailable(this)) {
+                    client.reTweet(tweet.getTweetId(), new JsonHttpResponseHandler() {
+                        @Override
+                        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                            tweet.setRetweeted(true);
+                            finish();
+                        }
+
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                            Log.d("RETWEET FAIL", errorResponse.toString());
+                        }
+                    });
+                }
+            }
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
