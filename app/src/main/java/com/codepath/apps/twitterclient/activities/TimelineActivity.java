@@ -66,9 +66,28 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
         lvTweets.setAdapter(tweetsAdapter);
 
         client = TwitterApplication.getRestClient();
+//        getRateLimit();
         setupListView();
         setupSwipeRefresh();
         getLoggedInUserInfo();
+    }
+
+    private void getRateLimit() {
+        client.getRateLimit(new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                String first = response.toString().substring(0, 4000);
+                String second = response.toString().substring(4000, response.toString().length());
+                Log.d("FIRST", first);
+                Log.d("SECOND", second);
+                status = false;
+            }
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Log.e("ERROR", errorResponse.toString());
+                status = false;
+            }
+        });
     }
 
     private void setupScrollToTop(ActionBar actionBar) {
@@ -95,6 +114,8 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
                 Tweet tweet = tweetsList.get(position);
                 Intent intent = new Intent(TimelineActivity.this, TweetDetailActivity.class);
                 intent.putExtra("tweet", tweet);
+                intent.putExtra("loggedInUser", loggedInUser);
+                intent.putExtra("tweetsList", tweetsList);
                 if (isNetworkAvailable()) {
                     startActivity(intent);
                     try {
@@ -182,7 +203,6 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
                 tweetsAdapter.addAll(Tweet.fromJSONArray(response));
                 status = true;
             }
-
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 Log.e("ERROR", errorResponse.toString());
@@ -214,7 +234,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_compose) {
             FragmentManager fm = getSupportFragmentManager();
-            ComposeTweetFragment settingsFragment = ComposeTweetFragment.newInstance(loggedInUser.getProfleImageUrl());
+            ComposeTweetFragment settingsFragment = ComposeTweetFragment.newInstance(loggedInUser.getProfleImageUrl(), false, null, -1);
             settingsFragment.show(fm, "compose_tweet_fragment");
             return true;
         }
@@ -223,7 +243,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
     }
 
     @Override
-    public void onFinishComposeTweetFragment(String tweetBody) {
+    public void onFinishComposeTweetFragment(String tweetBody, long replyToTweetId) {
         client.sendTweet(tweetBody, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {

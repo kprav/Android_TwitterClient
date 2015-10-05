@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,13 +15,16 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.codepath.apps.twitterclient.R;
 import com.codepath.apps.twitterclient.application.TwitterApplication;
 import com.codepath.apps.twitterclient.application.TwitterClient;
+import com.codepath.apps.twitterclient.fragments.ComposeTweetFragment;
 import com.codepath.apps.twitterclient.helpers.DeviceDimensionsHelper;
 import com.codepath.apps.twitterclient.helpers.NetworkAvailabilityCheck;
 import com.codepath.apps.twitterclient.models.Tweet;
+import com.codepath.apps.twitterclient.models.User;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.squareup.picasso.Picasso;
 
@@ -28,10 +32,15 @@ import org.apache.http.Header;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class TweetDetailActivity extends AppCompatActivity {
+import java.util.ArrayList;
 
+public class TweetDetailActivity extends AppCompatActivity implements ComposeTweetFragment.OnFragmentInteractionListener {
+
+    private Context context;
     private TwitterClient client;
+    private ArrayList<Tweet> tweetsList;
     private Tweet tweet;
+    private User loggedInUser;
     private ImageView ivProfileImageDetail;
     private TextView tvUserNameDetail;
     private TextView tvScreenNameDetail;
@@ -47,6 +56,7 @@ public class TweetDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_tweet_detail);
 
         client = TwitterApplication.getRestClient();
+        context = getApplicationContext();
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#55ACEE")));
@@ -68,6 +78,8 @@ public class TweetDetailActivity extends AppCompatActivity {
 
         // Get Parcelable data from the intent
         tweet = getIntent().getParcelableExtra("tweet");
+        loggedInUser = getIntent().getParcelableExtra("loggedInUser");
+        tweetsList = getIntent().getParcelableArrayListExtra("tweetsList");
 
         displayDetailedTweet();
     }
@@ -126,6 +138,7 @@ public class TweetDetailActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                             tweet.setRetweeted(true);
+                            Toast.makeText(context, "Retweeted", Toast.LENGTH_SHORT).show();
                             finish();
                         }
 
@@ -138,7 +151,38 @@ public class TweetDetailActivity extends AppCompatActivity {
             }
         }
 
+        if (id == R.id.action_reply) {
+            if (NetworkAvailabilityCheck.isNetworkAvailable(this)) {
+                FragmentManager fm = getSupportFragmentManager();
+                ComposeTweetFragment settingsFragment = ComposeTweetFragment.newInstance(loggedInUser.getProfleImageUrl(), true, tweet.getUser().getScreenName(), tweet.getTweetId());
+                settingsFragment.show(fm, "compose_tweet_fragment_for_reply");
+            }
+        }
+
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onFinishComposeTweetFragment(String tweetBody, long replyToTweetId) {
+        client.reply(tweetBody, replyToTweetId, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess ( int statusCode, Header[] headers, JSONObject response){
+                Tweet tweet = Tweet.fromJSON(response);
+                tweetsList.add(0, tweet);
+                finish();
+            }
+
+            @Override
+            public void onFailure ( int statusCode, Header[] headers, String
+            responseString, Throwable throwable){
+                Log.d("TWEET FAIL", Integer.toString(responseString.length()));
+                String first = responseString.toString().substring(0, 4000);
+                String second = responseString.toString().substring(4000, responseString.toString().length());
+                Log.d("FIRST", first);
+                Log.d("SECOND", second);
+                finish();
+            }
+        });
     }
 
 }

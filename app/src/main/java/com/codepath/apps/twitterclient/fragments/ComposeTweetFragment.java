@@ -35,6 +35,9 @@ public class ComposeTweetFragment extends DialogFragment {
     private OnFragmentInteractionListener mListener;
 
     private static String profilePicUrl;
+    private static boolean isReply;
+    private static String replyToUser;
+    private static long replyToTweetId;
     private Button btnCancel;
     private ImageView ivProfilePic;
     private EditText etTweet;
@@ -46,9 +49,12 @@ public class ComposeTweetFragment extends DialogFragment {
         // Required empty public constructor
     }
 
-    public static ComposeTweetFragment newInstance(String profilePicUrl) {
+    public static ComposeTweetFragment newInstance(String profilePicUrl, boolean isReply, String replyToUser, long replyToTweetId) {
         ComposeTweetFragment fragment = new ComposeTweetFragment();
         ComposeTweetFragment.profilePicUrl = profilePicUrl;
+        ComposeTweetFragment.isReply = isReply;
+        ComposeTweetFragment.replyToUser = replyToUser;
+        ComposeTweetFragment.replyToTweetId = replyToTweetId;
         return fragment;
     }
 
@@ -75,6 +81,10 @@ public class ComposeTweetFragment extends DialogFragment {
         sendTweet();
         btnTweet.setClickable(false);
         btnTweet.setEnabled(true);
+        if (ComposeTweetFragment.isReply) {
+            etTweet.setText(replyToUser);
+            etTweet.setSelection(etTweet.getText().length());
+        }
         return view;
     }
 
@@ -132,7 +142,7 @@ public class ComposeTweetFragment extends DialogFragment {
                 if (mListener == null)
                     mListener = (OnFragmentInteractionListener) getActivity();
                 Tweet tweet = new Tweet();
-                mListener.onFinishComposeTweetFragment(etTweet.getText().toString().trim());
+                mListener.onFinishComposeTweetFragment(etTweet.getText().toString().trim(), replyToTweetId);
                 dismiss();
             }
         });
@@ -192,7 +202,7 @@ public class ComposeTweetFragment extends DialogFragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        public void onFinishComposeTweetFragment(String tweetBody);
+        public void onFinishComposeTweetFragment(String tweetBody, long replyToTweetId);
     }
 
 }
