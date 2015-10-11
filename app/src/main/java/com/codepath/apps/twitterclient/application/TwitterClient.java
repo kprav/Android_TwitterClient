@@ -27,7 +27,9 @@ public class TwitterClient extends OAuthBaseClient {
     public static final String REST_CONSUMER_KEY = "FqTTRjDXwALWDy2UET2OQoXwG";       // Change this
     public static final String REST_CONSUMER_SECRET = "nkr3NLwhLNgFPoVNypFnXiwRo5BzIe0NZ4cIm75msQhPsBcK8k"; // Change this
     public static final String REST_CALLBACK_URL = "oauth://kpravtweets"; // Change this (here and in manifest)
-    public static long MAX_TWEET_ID = 0;
+    public static long MAX_TWEET_ID_HOME = 0;
+    public static long MAX_TWEET_ID_MENTIONS = 0;
+    public static long MAX_TWEET_ID_USER = 0;
 
     public TwitterClient(Context context) {
         super(context, REST_API_CLASS, REST_URL, REST_CONSUMER_KEY, REST_CONSUMER_SECRET, REST_CALLBACK_URL);
@@ -50,9 +52,40 @@ public class TwitterClient extends OAuthBaseClient {
         params.put("since_id", 1);
         params.put("include_entities", true);
         if (!reset)
-            params.put("max_id", MAX_TWEET_ID + 1);
+            params.put("max_id", MAX_TWEET_ID_HOME + 1);
         else
-            MAX_TWEET_ID = 0;
+            MAX_TWEET_ID_HOME = 0;
+        // Execute the request
+        getClient().get(apiUrl, params, handler);
+    }
+
+    // Get mentions tweets for the timeline
+    public void getMentionsTimeline(boolean reset, AsyncHttpResponseHandler handler) {
+        String apiUrl = getApiUrl("statuses/mentions_timeline.json");
+        // Specify the params
+        RequestParams params = new RequestParams();
+        params.put("count", 50);
+        params.put("include_entities", true);
+        if (!reset)
+            params.put("max_id", MAX_TWEET_ID_MENTIONS + 1);
+        else
+            MAX_TWEET_ID_MENTIONS = 0;
+        // Execute the request
+        getClient().get(apiUrl, params, handler);
+    }
+
+    // Get the tweets tweeted by a specific user
+    public void getUserTimeline(boolean reset, String screenName, AsyncHttpResponseHandler handler) {
+        String apiUrl = getApiUrl("statuses/user_timeline.json");
+        // Specify the params
+        RequestParams params = new RequestParams();
+        params.put("count", 50);
+        params.put("screen_name", screenName);
+        params.put("include_entities", true);
+        if (!reset)
+            params.put("max_id", MAX_TWEET_ID_USER + 1);
+        else
+            MAX_TWEET_ID_USER = 0;
         // Execute the request
         getClient().get(apiUrl, params, handler);
     }

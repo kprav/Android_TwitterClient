@@ -5,46 +5,40 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 
+import com.astuetz.PagerSlidingTabStrip;
 import com.codepath.apps.twitterclient.R;
-import com.codepath.apps.twitterclient.adapters.TweetsArrayAdapter;
+import com.codepath.apps.twitterclient.adapters.TweetPagerAdapter;
 import com.codepath.apps.twitterclient.application.TwitterApplication;
 import com.codepath.apps.twitterclient.application.TwitterClient;
 import com.codepath.apps.twitterclient.fragments.ComposeTweetFragment;
-import com.codepath.apps.twitterclient.helpers.EndlessScrollListener;
+import com.codepath.apps.twitterclient.fragments.TweetsListFragment;
 import com.codepath.apps.twitterclient.helpers.NetworkAvailabilityCheck;
 import com.codepath.apps.twitterclient.models.Tweet;
 import com.codepath.apps.twitterclient.models.User;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.apache.http.Header;
-import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
 
 public class TimelineActivity extends AppCompatActivity implements ComposeTweetFragment.OnFragmentInteractionListener {
 
-    private SwipeRefreshLayout swipeContainer;
     private TwitterClient client;
     private User loggedInUser;
-    private ArrayList<Tweet> tweetsList;
-    private TweetsArrayAdapter tweetsAdapter;
-    private ListView lvTweets;
-    private boolean status;
-
     private ImageView scrollToTop;
+
+    private ViewPager vpPager;
+    private TweetPagerAdapter viewPagerAdapter;
+    PagerSlidingTabStrip tabsStrip;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,19 +50,14 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
             getSupportActionBar().setDisplayShowCustomEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(false);
             getSupportActionBar().setDisplayShowTitleEnabled(false);
-            setupScrollToTop(getSupportActionBar());
+            setupScrollToTopButton(getSupportActionBar());
         }
-
-        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
-        lvTweets = (ListView) findViewById(R.id.lvTweets);
-        tweetsList = new ArrayList<Tweet>();
-        tweetsAdapter = new TweetsArrayAdapter(this, tweetsList);
-        lvTweets.setAdapter(tweetsAdapter);
-
+        // Get the fragment, only if it has not been inflated before
+        // if (savedInstanceState == null) {
+        //     fragmentTweetsList = (TweetsListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_timeline);
+        // }
         client = TwitterApplication.getRestClient();
-//        getRateLimit();
-        setupListView();
-        setupSwipeRefresh();
+        // getRateLimit();
         getLoggedInUserInfo();
     }
 
@@ -80,91 +69,23 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
                 String second = response.toString().substring(4000, response.toString().length());
                 Log.d("FIRST", first);
                 Log.d("SECOND", second);
-                status = false;
             }
+
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 Log.e("ERROR", errorResponse.toString());
-                status = false;
             }
         });
     }
 
-    private void setupScrollToTop(ActionBar actionBar) {
+    private void setupScrollToTopButton(ActionBar actionBar) {
         scrollToTop = new ImageView(this);
         scrollToTop.setClickable(true);
         scrollToTop.setEnabled(true);
         scrollToTop.setBackgroundResource(R.drawable.ic_twitter_white);
-        ;
         RelativeLayout relative = new RelativeLayout(this);
         relative.addView(scrollToTop);
         actionBar.setCustomView(relative);
-        scrollToTop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                lvTweets.smoothScrollToPosition(0);
-            }
-        });
-    }
-
-    private void setupListView() {
-        lvTweets.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Tweet tweet = tweetsList.get(position);
-                Intent intent = new Intent(TimelineActivity.this, TweetDetailActivity.class);
-                intent.putExtra("tweet", tweet);
-                intent.putExtra("loggedInUser", loggedInUser);
-                intent.putExtra("tweetsList", tweetsList);
-                if (isNetworkAvailable()) {
-                    startActivity(intent);
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    populateTimeline(true);
-                }
-            }
-        });
-
-        lvTweets.setOnScrollListener(new EndlessScrollListener() {
-            // Triggered only when new data needs to be appended to the list
-            // Load more data for paginating and append the new data items to the adapter.
-            // Use the page/totalItemsCount value to retrieve paginated data.
-            @Override
-            public boolean onLoadMore(int page, int totalItemsCount) {
-                if (totalItemsCount <= 800) {
-                    // Twitter returns about 800 tweets for the home timeline.
-                    // We query 50 results with each call.
-
-                    Log.d("totalItemsCount", Integer.toString(totalItemsCount));
-
-                    return (populateTimeline(false));
-
-                    // True ONLY if more data is actually being loaded; false otherwise.
-                    // return true;
-                }
-                return false;
-            }
-        });
-    }
-
-    private void setupSwipeRefresh() {
-        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                // Make sure to call swipeContainer.setRefreshing(false)
-                // once the network request has completed successfully.
-                populateTimeline(true);
-            }
-        });
-        // Configure the refreshing colors
-        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
-
     }
 
     private void getLoggedInUserInfo() {
@@ -174,7 +95,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Log.d("USER", response.toString());
                     loggedInUser = User.fromJSON(response);
-                    populateTimeline(true);
+                    loadFragments();
                 }
 
                 @Override
@@ -185,32 +106,40 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
         }
     }
 
-    // Send an API request to get the timeline json
-    // Fill the listview by creating the tweet objects from the json
-    private boolean populateTimeline(boolean reset) {
-        if (!isNetworkAvailable()) {
-            // hideProgressBar();
-            swipeContainer.setRefreshing(false);
-            return false;
-        }
-        if (reset) {
-            tweetsAdapter.clear();
-        }
-        client.getHomeTimeline(reset, new JsonHttpResponseHandler() {
+    private void loadFragments() {
+        // Get the viewpager and setup a PageChangeListener
+        vpPager = (ViewPager) findViewById(R.id.viewpager);
+        // Get the view pager adapter for the pager
+        viewPagerAdapter = new TweetPagerAdapter(getSupportFragmentManager(), loggedInUser);
+        vpPager.setAdapter(viewPagerAdapter);
+        // Find the sliding tabstrips
+        tabsStrip = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+        // Attach the tabstrip to the view pager
+        tabsStrip.setViewPager(vpPager);
+        setupPageChangeListener();
+    }
+
+    private void setupPageChangeListener() {
+        tabsStrip.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                Log.d("DEBUG", response.toString());
-                tweetsAdapter.addAll(Tweet.fromJSONArray(response));
-                status = true;
-            }
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Log.e("ERROR", errorResponse.toString());
-                status = false;
+            public void onPageSelected(final int position) {
+                Log.i("AAA", "Page Selected");
+                scrollToTop.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ((TweetsListFragment) viewPagerAdapter.getRegisteredFragment(position)).scrollToTop();
+                    }
+                });
             }
         });
-        swipeContainer.setRefreshing(false);
-        return status;
+    }
+
+    public void onProfileView(MenuItem item) {
+        Intent i = new Intent(this, ProfileActivity.class);
+        i.putExtra("user", loggedInUser);
+        if (NetworkAvailabilityCheck.isNetworkAvailable(this)) {
+            startActivity(i);
+        }
     }
 
     private boolean isNetworkAvailable() {
@@ -248,9 +177,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 Tweet tweet = Tweet.fromJSON(response);
-                tweetsList.add(0, tweet);
-                tweetsAdapter.notifyDataSetChanged();
-                populateTimeline(true);
+                ((TweetsListFragment) viewPagerAdapter.getRegisteredFragment(0)).add(0, tweet);
             }
 
             @Override
@@ -263,4 +190,5 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
             }
         });
     }
+
 }

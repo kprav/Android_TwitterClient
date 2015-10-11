@@ -132,7 +132,7 @@ public class Tweet implements Parcelable {
     }
 
     // Pass in an array of JSON items and return a list of tweets
-    public static ArrayList<Tweet> fromJSONArray(JSONArray jsonArray) {
+    public static ArrayList<Tweet> fromJSONArray(TweetType tweetType, JSONArray jsonArray) {
         ArrayList<Tweet> tweets = new ArrayList<Tweet>();
         for (int i = 0; i < jsonArray.length(); i++) {
             // TODO: check for null
@@ -142,7 +142,12 @@ public class Tweet implements Parcelable {
                 if (tweet != null) {
                     tweets.add(tweet);
                 }
-                TwitterClient.MAX_TWEET_ID = tweet.getTweetId();
+                if (tweetType.equals(TweetType.HOME_TIMELINE))
+                    TwitterClient.MAX_TWEET_ID_HOME = tweet.getTweetId();
+                else if (tweetType.equals(TweetType.HOME_TIMELINE))
+                    TwitterClient.MAX_TWEET_ID_MENTIONS = tweet.getTweetId();
+                else if (tweetType.equals(TweetType.USER_TIMELINE))
+                    TwitterClient.MAX_TWEET_ID_USER = tweet.getTweetId();
             } catch (JSONException e) {
                 e.printStackTrace();
                 continue;

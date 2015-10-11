@@ -13,7 +13,7 @@
     <item
         android:id="@+id/action_reply"
         android:icon="@drawable/ic_tweet_reply"
-        android:orderInCategory="100"
+        android:orderInCategory="99"
         android:title="@string/label_reply"
         app:showAsAction="ifRoom" />
 

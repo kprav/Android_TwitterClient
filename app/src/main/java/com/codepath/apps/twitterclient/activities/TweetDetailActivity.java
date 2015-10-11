@@ -29,7 +29,6 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import com.squareup.picasso.Picasso;
 
 import org.apache.http.Header;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -40,7 +39,7 @@ public class TweetDetailActivity extends AppCompatActivity implements ComposeTwe
     private TwitterClient client;
     private ArrayList<Tweet> tweetsList;
     private Tweet tweet;
-    private User loggedInUser;
+    private User user;
     private ImageView ivProfileImageDetail;
     private TextView tvUserNameDetail;
     private TextView tvScreenNameDetail;
@@ -78,7 +77,7 @@ public class TweetDetailActivity extends AppCompatActivity implements ComposeTwe
 
         // Get Parcelable data from the intent
         tweet = getIntent().getParcelableExtra("tweet");
-        loggedInUser = getIntent().getParcelableExtra("loggedInUser");
+        user = getIntent().getParcelableExtra("user");
         tweetsList = getIntent().getParcelableArrayListExtra("tweetsList");
 
         displayDetailedTweet();
@@ -154,7 +153,7 @@ public class TweetDetailActivity extends AppCompatActivity implements ComposeTwe
         if (id == R.id.action_reply) {
             if (NetworkAvailabilityCheck.isNetworkAvailable(this)) {
                 FragmentManager fm = getSupportFragmentManager();
-                ComposeTweetFragment settingsFragment = ComposeTweetFragment.newInstance(loggedInUser.getProfleImageUrl(), true, tweet.getUser().getScreenName(), tweet.getTweetId());
+                ComposeTweetFragment settingsFragment = ComposeTweetFragment.newInstance(user.getProfleImageUrl(), true, tweet.getUser().getScreenName(), tweet.getTweetId());
                 settingsFragment.show(fm, "compose_tweet_fragment_for_reply");
             }
         }
@@ -166,15 +165,15 @@ public class TweetDetailActivity extends AppCompatActivity implements ComposeTwe
     public void onFinishComposeTweetFragment(String tweetBody, long replyToTweetId) {
         client.reply(tweetBody, replyToTweetId, new JsonHttpResponseHandler() {
             @Override
-            public void onSuccess ( int statusCode, Header[] headers, JSONObject response){
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 Tweet tweet = Tweet.fromJSON(response);
                 tweetsList.add(0, tweet);
                 finish();
             }
 
             @Override
-            public void onFailure ( int statusCode, Header[] headers, String
-            responseString, Throwable throwable){
+            public void onFailure(int statusCode, Header[] headers, String
+                    responseString, Throwable throwable) {
                 Log.d("TWEET FAIL", Integer.toString(responseString.length()));
                 String first = responseString.toString().substring(0, 4000);
                 String second = responseString.toString().substring(4000, responseString.toString().length());

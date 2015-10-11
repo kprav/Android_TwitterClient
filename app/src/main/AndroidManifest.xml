@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.codepath.apps.twitterclient"
     android:versionCode="1"
-    android:versionName="1.0">
+    android:versionName="1.0" >
 
     <uses-sdk
         android:minSdkVersion="16"
@@ -19,7 +19,7 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_twitter_blue"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme" >
         <meta-data
             android:name="AA_DB_NAME"
             android:value="RestClient.db" />
@@ -31,7 +31,7 @@
             android:name=".activities.LoginActivity"
             android:label="@string/app_name"
             android:noHistory="true"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -56,10 +56,12 @@
             android:name=".activities.TweetDetailActivity"
             android:label="@string/title_activity_tweet_detail"
             android:parentActivityName=".activities.TimelineActivity"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.codepath.apps.twitterclient.activities.TimelineActivity" />
+        </activity>
+        <activity android:name=".activities.ProfileActivity" >
         </activity>
     </application>
 

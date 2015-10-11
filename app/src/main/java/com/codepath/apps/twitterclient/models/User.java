@@ -11,6 +11,10 @@ public class User implements Parcelable {
     private String userName;
     private String screenName;
     private String profleImageUrl;
+    private String profileBannerUrl;
+    private String tagLine;
+    private int followers;
+    private int following;
 
     public Long getUserId() {
         return userId;
@@ -28,6 +32,22 @@ public class User implements Parcelable {
         return profleImageUrl;
     }
 
+    public String getProfileBannerUrl() {
+        return profileBannerUrl;
+    }
+
+    public String getTagLine() {
+        return tagLine;
+    }
+
+    public int getFollowers() {
+        return followers;
+    }
+
+    public int getFollowing() {
+        return following;
+    }
+
     // Deserialize the JSON
     //  - Extract values from JSON
     //  - Construct the User Object and return it
@@ -39,10 +59,20 @@ public class User implements Parcelable {
             u.userName = jsonObject.getString("name");
             u.screenName = "@" + jsonObject.getString("screen_name");
             u.profleImageUrl = jsonObject.getString("profile_image_url");
+            u.tagLine = jsonObject.getString("description");
+            u.followers = jsonObject.getInt("followers_count");
+            u.following = jsonObject.getInt("friends_count");
+            if (jsonObject.optString("profile_banner_url") != "")
+                u.profileBannerUrl = jsonObject.getString("profile_banner_url");
+            else
+                u.profileBannerUrl = null;
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return u;
+    }
+
+    public User() {
     }
 
     @Override
@@ -56,9 +86,10 @@ public class User implements Parcelable {
         dest.writeString(this.userName);
         dest.writeString(this.screenName);
         dest.writeString(this.profleImageUrl);
-    }
-
-    public User() {
+        dest.writeString(this.profileBannerUrl);
+        dest.writeString(this.tagLine);
+        dest.writeInt(this.followers);
+        dest.writeInt(this.following);
     }
 
     protected User(Parcel in) {
@@ -66,9 +97,13 @@ public class User implements Parcelable {
         this.userName = in.readString();
         this.screenName = in.readString();
         this.profleImageUrl = in.readString();
+        this.profileBannerUrl = in.readString();
+        this.tagLine = in.readString();
+        this.followers = in.readInt();
+        this.following = in.readInt();
     }
 
-    public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
+    public static final Creator<User> CREATOR = new Parcelable.Creator<User>() {
         public User createFromParcel(Parcel source) {
             return new User(source);
         }

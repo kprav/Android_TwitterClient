@@ -6,9 +6,10 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 
 /**
- Authored by @nesquena
- Obtained from GitHub
- @see <a href="https://gist.github.com/nesquena/318b6930aac3a56f96a4">https://gist.github.com/nesquena/318b6930aac3a56f96a4</a>
+ * Authored by @nesquena
+ * Obtained from GitHub
+ *
+ * @see <a href="https://gist.github.com/nesquena/318b6930aac3a56f96a4">https://gist.github.com/nesquena/318b6930aac3a56f96a4</a>
  */
 public class DeviceDimensionsHelper {
     // DeviceDimensionsHelper.getDisplayWidth(context) => (display width in pixels)
@@ -24,13 +25,13 @@ public class DeviceDimensionsHelper {
     }
 
     // DeviceDimensionsHelper.convertDpToPixel(25f, context) => (25dp converted to pixels)
-    public static float convertDpToPixel(float dp, Context context){
+    public static float convertDpToPixel(float dp, Context context) {
         Resources r = context.getResources();
         return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics());
     }
 
     // DeviceDimensionsHelper.convertPixelsToDp(25f, context) => (25px converted to dp)
-    public static float convertPixelsToDp(float px, Context context){
+    public static float convertPixelsToDp(float px, Context context) {
         Resources r = context.getResources();
         DisplayMetrics metrics = r.getDisplayMetrics();
         float dp = px / (metrics.densityDpi / 160f);

@@ -1,7 +1,6 @@
 package com.codepath.apps.twitterclient.helpers;
 
 import android.text.format.DateUtils;
-import android.util.Log;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

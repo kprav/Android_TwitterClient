@@ -1,6 +1,8 @@
 package com.codepath.apps.twitterclient.adapters;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +13,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.codepath.apps.twitterclient.R;
+import com.codepath.apps.twitterclient.activities.ProfileActivity;
 import com.codepath.apps.twitterclient.helpers.DeviceDimensionsHelper;
+import com.codepath.apps.twitterclient.helpers.NetworkAvailabilityCheck;
 import com.codepath.apps.twitterclient.models.Tweet;
 import com.squareup.picasso.Picasso;
 
@@ -55,7 +59,7 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Tweet tweet = getItem(position);
+        final Tweet tweet = getItem(position);
         ViewHolder viewHolder;
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_tweet, parent, false);
@@ -97,6 +101,17 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet> {
         } else {
             viewHolder.tvBody.setPadding(0, 0, 10, 5);
         }
+
+        viewHolder.ivProfileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getContext(), ProfileActivity.class);
+                i.putExtra("user", tweet.getUser());
+                if (NetworkAvailabilityCheck.isNetworkAvailable((Activity) getContext())) {
+                    getContext().startActivity(i);
+                }
+            }
+        });
 
         // viewHolder.rlInlinePhoto = rlInlinePhoto;
 

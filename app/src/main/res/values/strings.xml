@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="app_name">Twitter Client</string>
     <string name="action_compose">Compose</string>
     <string name="title_activity_timeline">Home Timeline</string>
@@ -9,9 +10,6 @@
     <string name="label_screen_name">ScreenName</string>
     <string name="label_tweet_body">TweetBody</string>
     <string name="label_creation_time">time</string>
-
-<!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="label_cancel_button">X</string>
     <string name="label_tweet">Tweet</string>
     <string name="label_tweet_hint">What\'s happening?</string>
@@ -20,5 +18,10 @@
     <string name="action_settings">Settings</string>
     <string name="label_retweet">Retweet</string>
     <string name="label_reply">Reply</string>
+    <string name="action_profile">Profile</string>
+    <string name="label_profile_name">Profile Name</string>
+    <string name="label_tag_line">Profile Tag Line</string>
+    <string name="label_num_followers">Num Followers</string>
+    <string name="label_num_following">Num Following</string>
 
 </resources>

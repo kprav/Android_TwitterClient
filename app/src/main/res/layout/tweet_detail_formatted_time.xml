@@ -6,5 +6,5 @@
     android:layout_alignParentLeft="true"
     android:layout_alignParentStart="true"
     android:layout_below="@+id/tvTweetDetail"
-    android:textColor="#90A4AE"
-    android:text="@string/label_creation_time" />
+    android:text="@string/label_creation_time"
+    android:textColor="#90A4AE" />
