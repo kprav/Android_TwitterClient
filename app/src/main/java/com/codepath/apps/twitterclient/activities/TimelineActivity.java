@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.activeandroid.ActiveAndroid;
 import com.astuetz.PagerSlidingTabStrip;
 import com.codepath.apps.twitterclient.R;
 import com.codepath.apps.twitterclient.adapters.TweetPagerAdapter;
@@ -44,6 +45,8 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_time_line);
+
+        ActiveAndroid.setLoggingEnabled(true);
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#55ACEE")));
@@ -103,6 +106,8 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
                     Log.e("ERROR", errorResponse.toString());
                 }
             });
+        } else {
+            loadFragments();
         }
     }
 
@@ -123,7 +128,6 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
         tabsStrip.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(final int position) {
-                Log.i("AAA", "Page Selected");
                 scrollToTop.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -139,6 +143,8 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
         i.putExtra("user", loggedInUser);
         if (NetworkAvailabilityCheck.isNetworkAvailable(this)) {
             startActivity(i);
+        } else {
+            NetworkAvailabilityCheck.showToast(this);
         }
     }
 
@@ -163,8 +169,12 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_compose) {
             FragmentManager fm = getSupportFragmentManager();
-            ComposeTweetFragment settingsFragment = ComposeTweetFragment.newInstance(loggedInUser.getProfleImageUrl(), false, null, -1);
-            settingsFragment.show(fm, "compose_tweet_fragment");
+            if (isNetworkAvailable()) {
+                ComposeTweetFragment settingsFragment = ComposeTweetFragment.newInstance(loggedInUser.getProfileImageUrl(), false, null, -1);
+                settingsFragment.show(fm, "compose_tweet_fragment");
+            } else {
+                NetworkAvailabilityCheck.showToast(this);
+            }
             return true;
         }
 
