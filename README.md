@@ -48,7 +48,7 @@ The following **bonus** features are implemented:
 The following **additional** features are implemented:
 
 * [x] Clicking ActionBar icon in timeline will scroll to top
-* [x] Integrated the [SmartFragmentStatePagerAdapter](https://gist.github.com/nesquena/318b6930aac3a56f96a4)
+* [x] Integrated the [SmartFragmentStatePagerAdapter](https://gist.github.com/nesquena/c715c9b22fb873b1d259)
 * [x] Used a custom relative layout to show banner image in the profile view
 
 **TODO**

@@ -10,7 +10,7 @@ import android.view.ViewGroup;
  * Authored by @nesquena
  * Obtained from GitHub
  *
- * @see <a href="https://gist.github.com/nesquena/318b6930aac3a56f96a4">https://gist.github.com/nesquena/318b6930aac3a56f96a4</a>
+ * @see <a href="https://gist.github.com/nesquena/c715c9b22fb873b1d259">https://gist.github.com/nesquena/c715c9b22fb873b1d259</a>
  * <p/>
  * Extension of FragmentStatePagerAdapter which intelligently caches
  * all active fragments and manages the fragment lifecycles.
