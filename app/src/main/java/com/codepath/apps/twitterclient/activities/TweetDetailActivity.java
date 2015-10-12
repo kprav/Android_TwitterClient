@@ -88,7 +88,7 @@ public class TweetDetailActivity extends AppCompatActivity implements ComposeTwe
         tvScreenNameDetail.setTypeface(roboto_light);
         tvTweetDetail.setTypeface(roboto_regular);
 
-        Picasso.with(this).load(tweet.getUser().getProfleImageUrl()).into(ivProfileImageDetail);
+        Picasso.with(this).load(tweet.getUser().getProfileImageUrl()).into(ivProfileImageDetail);
         tvUserNameDetail.setText(tweet.getUser().getUserName());
         tvScreenNameDetail.setText(tweet.getUser().getScreenName());
         tvTweetDetail.setText(tweet.getBody());
@@ -101,7 +101,7 @@ public class TweetDetailActivity extends AppCompatActivity implements ComposeTwe
         rlInlinePhotoDetail.addView(tvCreationTimeDetail);
 
         if (tweet.getEntity() != null) {
-            String mediaUrl = tweet.getEntity().getMedaiUrlLarge();
+            String mediaUrl = tweet.getEntity().getMediaUrlLarge();
             View inlinePhotoView = layoutInflater.inflate(R.layout.inline_photo, null);
             ImageView ivInlinePhotoDetail = (ImageView) inlinePhotoView.findViewById(R.id.ivInlinePhoto);
             Picasso.with(this).load(mediaUrl).resize(DeviceDimensionsHelper.getDisplayWidth(this), 0).into(ivInlinePhotoDetail);
@@ -131,7 +131,7 @@ public class TweetDetailActivity extends AppCompatActivity implements ComposeTwe
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_retweet) {
-            if (!tweet.getRetwweted()) {
+            if (!tweet.getRetweeted()) {
                 if (NetworkAvailabilityCheck.isNetworkAvailable(this)) {
                     client.reTweet(tweet.getTweetId(), new JsonHttpResponseHandler() {
                         @Override
@@ -153,7 +153,7 @@ public class TweetDetailActivity extends AppCompatActivity implements ComposeTwe
         if (id == R.id.action_reply) {
             if (NetworkAvailabilityCheck.isNetworkAvailable(this)) {
                 FragmentManager fm = getSupportFragmentManager();
-                ComposeTweetFragment settingsFragment = ComposeTweetFragment.newInstance(user.getProfleImageUrl(), true, tweet.getUser().getScreenName(), tweet.getTweetId());
+                ComposeTweetFragment settingsFragment = ComposeTweetFragment.newInstance(user.getProfileImageUrl(), true, tweet.getUser().getScreenName(), tweet.getTweetId());
                 settingsFragment.show(fm, "compose_tweet_fragment_for_reply");
             }
         }

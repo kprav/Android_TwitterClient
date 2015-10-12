@@ -20,6 +20,7 @@ public class Tweet implements Parcelable {
     private User user;
     private Entity entity;
     private long tweetId;
+    private TweetType tweetType;
     private String body;
     private String createdAt;
     private String formattedCreatedAt;
@@ -38,6 +39,10 @@ public class Tweet implements Parcelable {
 
     public void setTweetId(long tweetId) {
         this.tweetId = tweetId;
+    }
+
+    public void setTweetType(TweetType tweetType) {
+        this.tweetType = tweetType;
     }
 
     public void setBody(String body) {
@@ -80,6 +85,10 @@ public class Tweet implements Parcelable {
         return tweetId;
     }
 
+    public TweetType getTweetType() {
+        return tweetType;
+    }
+
     public String getBody() {
         return body;
     }
@@ -100,7 +109,7 @@ public class Tweet implements Parcelable {
         return favorited;
     }
 
-    public boolean getRetwweted() {
+    public boolean getRetweeted() {
         return retweeted;
     }
 
@@ -140,6 +149,7 @@ public class Tweet implements Parcelable {
                 JSONObject tweetsJson = jsonArray.getJSONObject(i);
                 Tweet tweet = Tweet.fromJSON(tweetsJson);
                 if (tweet != null) {
+                    tweet.tweetType = tweetType;
                     tweets.add(tweet);
                 }
                 if (tweetType.equals(TweetType.HOME_TIMELINE))
@@ -157,6 +167,9 @@ public class Tweet implements Parcelable {
         return tweets;
     }
 
+    public Tweet() {
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -167,6 +180,7 @@ public class Tweet implements Parcelable {
         dest.writeParcelable(this.user, 0);
         dest.writeParcelable(this.entity, 0);
         dest.writeLong(this.tweetId);
+        dest.writeInt(this.tweetType == null ? -1 : this.tweetType.ordinal());
         dest.writeString(this.body);
         dest.writeString(this.createdAt);
         dest.writeString(this.formattedCreatedAt);
@@ -176,13 +190,12 @@ public class Tweet implements Parcelable {
         dest.writeInt(this.retweetCount);
     }
 
-    public Tweet() {
-    }
-
     protected Tweet(Parcel in) {
         this.user = in.readParcelable(User.class.getClassLoader());
         this.entity = in.readParcelable(Entity.class.getClassLoader());
         this.tweetId = in.readLong();
+        int tmpTweetType = in.readInt();
+        this.tweetType = tmpTweetType == -1 ? null : TweetType.values()[tmpTweetType];
         this.body = in.readString();
         this.createdAt = in.readString();
         this.formattedCreatedAt = in.readString();
@@ -192,7 +205,7 @@ public class Tweet implements Parcelable {
         this.retweetCount = in.readInt();
     }
 
-    public static final Parcelable.Creator<Tweet> CREATOR = new Parcelable.Creator<Tweet>() {
+    public static final Creator<Tweet> CREATOR = new Parcelable.Creator<Tweet>() {
         public Tweet createFromParcel(Parcel source) {
             return new Tweet(source);
         }

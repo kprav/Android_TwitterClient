@@ -21,6 +21,7 @@
     <string name="action_profile">Profile</string>
     <string name="label_profile_name">Profile Name</string>
     <string name="label_tag_line">Profile Tag Line</string>
+    <string name="label_num_tweets">Num Tweets</string>
     <string name="label_num_followers">Num Followers</string>
     <string name="label_num_following">Num Following</string>
 

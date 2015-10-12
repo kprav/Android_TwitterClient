@@ -17,16 +17,21 @@ import com.codepath.apps.twitterclient.activities.TweetDetailActivity;
 import com.codepath.apps.twitterclient.adapters.TweetsArrayAdapter;
 import com.codepath.apps.twitterclient.application.TwitterApplication;
 import com.codepath.apps.twitterclient.application.TwitterClient;
+import com.codepath.apps.twitterclient.dao.DbOperations;
 import com.codepath.apps.twitterclient.helpers.EndlessScrollListener;
 import com.codepath.apps.twitterclient.helpers.NetworkAvailabilityCheck;
 import com.codepath.apps.twitterclient.models.Tweet;
 import com.codepath.apps.twitterclient.models.User;
+import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
 
 public abstract class TweetsListFragment extends Fragment {
 
+    private TreeMap<User, Boolean> userStorageMap = new TreeMap<User, Boolean>();
     private ArrayList<Tweet> tweetsList;
     private TweetsArrayAdapter tweetsAdapter;
     private ListView lvTweets;
@@ -73,6 +78,8 @@ public abstract class TweetsListFragment extends Fragment {
 
     public void clear() {
         tweetsAdapter.clear();
+        if (tweetsList.size() > 0)
+            DbOperations.clearDatabase(tweetsList.get(0).getTweetType().ordinal());
     }
 
     public void setupSwipeRefresh() {
@@ -132,6 +139,30 @@ public abstract class TweetsListFragment extends Fragment {
                 return false;
             }
         });
+    }
+
+    // TODO: Remove this if not necessary
+    public void saveTweetsInDatabase(List<Tweet> tweets) {
+        File filesDir = getActivity().getFilesDir();
+        for (Tweet tweet : tweets) {
+            String profileImageUrl = tweet.getUser().getProfileImageUrl();
+            String profileBannerUrl = tweet.getUser().getProfileBannerUrl();
+            String mediaUrlLarge = (tweet.getEntity() != null) ? tweet.getEntity().getMediaUrlLarge() : null;
+            File profileImage = null;
+            File bannerImage = null;
+            File mediaImage = null;
+            if (!userStorageMap.get(tweet.getUser())) {
+                if (profileImageUrl != null && !profileImageUrl.equals("")) {
+                    profileImage = new File(filesDir, tweet.getUser().getScreenName() + "_profile");
+                }
+                if (profileBannerUrl != null && !profileBannerUrl.equals("")) {
+                     bannerImage = new File(filesDir, tweet.getUser().getScreenName() + "_banner");
+                }
+            }
+            if (mediaUrlLarge != null && !mediaUrlLarge.equals("")) {
+                mediaImage = new File(filesDir, tweet.getTweetId() + "_media");
+            }
+        }
     }
 
 }

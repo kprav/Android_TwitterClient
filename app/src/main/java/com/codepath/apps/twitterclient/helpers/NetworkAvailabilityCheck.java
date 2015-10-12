@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.AlertDialog;
+import android.widget.Toast;
 
 public class NetworkAvailabilityCheck {
 
@@ -16,7 +17,7 @@ public class NetworkAvailabilityCheck {
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         if (activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting())
             return true;
-        showNetworkUnavailableDialog(activity);
+        // showNetworkUnavailableDialog(activity);
         return false;
     }
 
@@ -32,6 +33,10 @@ public class NetworkAvailabilityCheck {
                     }
                 });
         alertDialog.show();
+    }
+
+    public static void showToast(Activity activity) {
+        Toast.makeText(activity, "No Internet! Please check your connection.", Toast.LENGTH_SHORT).show();
     }
 
 }

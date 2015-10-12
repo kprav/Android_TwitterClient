@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.codepath.apps.twitterclient.dao.DbOperations;
 import com.codepath.apps.twitterclient.helpers.NetworkAvailabilityCheck;
 import com.codepath.apps.twitterclient.models.Tweet;
 import com.codepath.apps.twitterclient.models.TweetType;
@@ -17,9 +18,12 @@ import org.apache.http.Header;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.List;
+
 public class MentionsTimelineFragment extends TweetsListFragment {
 
     private boolean status;
+    private boolean networkFlag = true;
 
     public MentionsTimelineFragment() {
     }
@@ -45,17 +49,27 @@ public class MentionsTimelineFragment extends TweetsListFragment {
     public boolean populateTimeline(boolean reset) {
         if (!isNetworkAvailable()) {
             // hideProgressBar();
-            swipeContainer.setRefreshing(false);
+            if (reset || networkFlag) {
+                networkFlag = false;
+                NetworkAvailabilityCheck.showToast(getActivity());
+            }
+            if (reset) {
+                addAll(DbOperations.getTweets(TweetType.MENTIONS_TIMELINE));
+            }
+                swipeContainer.setRefreshing(false);
             return false;
         }
         if (reset) {
             clear();
         }
+        networkFlag = true;
         client.getMentionsTimeline(reset, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 Log.d("DEBUG", response.toString());
-                addAll(Tweet.fromJSONArray(TweetType.MENTIONS_TIMELINE, response));
+                List<Tweet> tweets = Tweet.fromJSONArray(TweetType.MENTIONS_TIMELINE, response);
+                addAll(tweets);
+                // DbOperations.insertTweets(tweets, TweetType.MENTIONS_TIMELINE.ordinal());
                 status = true;
             }
 

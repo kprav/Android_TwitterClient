@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.codepath.apps.twitterclient.dao.DbOperations;
 import com.codepath.apps.twitterclient.helpers.NetworkAvailabilityCheck;
 import com.codepath.apps.twitterclient.models.Tweet;
 import com.codepath.apps.twitterclient.models.TweetType;
@@ -17,9 +18,12 @@ import org.apache.http.Header;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.List;
+
 public class HomeTimelineFragment extends TweetsListFragment {
 
     private boolean status;
+    private boolean networkFlag = true;
 
     public HomeTimelineFragment() {
     }
@@ -45,9 +49,18 @@ public class HomeTimelineFragment extends TweetsListFragment {
     public boolean populateTimeline(boolean reset) {
         if (!isNetworkAvailable()) {
             // hideProgressBar();
+            if (reset || networkFlag) {
+                networkFlag = false;
+                NetworkAvailabilityCheck.showToast(getActivity());
+            }
+            if (reset) {
+                List<Tweet> tweets = DbOperations.getTweets(TweetType.HOME_TIMELINE);
+                addAll(tweets);
+            }
             swipeContainer.setRefreshing(false);
             return false;
         }
+        networkFlag = true;
         if (reset) {
             clear();
         }
@@ -55,7 +68,9 @@ public class HomeTimelineFragment extends TweetsListFragment {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 Log.d("DEBUG", response.toString());
-                addAll(Tweet.fromJSONArray(TweetType.HOME_TIMELINE, response));
+                List<Tweet> tweets = Tweet.fromJSONArray(TweetType.HOME_TIMELINE, response);
+                addAll(tweets);
+                // DbOperations.insertTweets(tweets, TweetType.HOME_TIMELINE.ordinal());
                 status = true;
             }
 
