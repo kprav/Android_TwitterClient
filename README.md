@@ -18,6 +18,16 @@ The following **required** functionality is completed:
   * [x] User can click a “Compose” icon in the Action Bar on the top right
   * [x] User can then enter a new tweet and post this to twitter
   * [x] User is taken back to home timeline with **new tweet visible** in timeline
+* [x] User can **switch between Timeline and Mention views using tabs**
+  * [x] User can view their home timeline tweets.
+  * [x] User can view the recent mentions of their username.
+* [x] User can navigate to **view their own profile**
+  * [x] User can see picture, tagline, # of followers, # of following, and tweets on their profile.
+* [x] User can **click on the profile image** in any tweet to see **another user's** profile.
+ * [x] User can see picture, tagline, # of followers, # of following, and tweets of clicked user.
+ * [x] Profile view includes that user's timeline
+* [x] User can [infinitely paginate](http://guides.codepath.com/android/Endless-Scrolling-with-AdapterViews) any of these timelines (home, mentions, user) by scrolling to the bottom
+* [x] User can **open the twitter app offline and see last loaded tweets**. Persisted in SQLite tweets are refreshed on every application launch. While "live data" is displayed when app can get it from Twitter API, it is also saved for use in offline mode.
 
 The following **optional** features are implemented:
 
@@ -27,6 +37,8 @@ The following **optional** features are implemented:
 * [x] User can tap a tweet to **open a detailed tweet view**
 * [X] User can **select "reply" icon from detail view to respond to a tweet**
 * [x] Improve the user interface and theme the app to feel "twitter branded"
+* [X] Implements robust error handling, [check if internet is available](http://guides.codepath.com/android/Sending-and-Managing-Network-Requests#checking-for-network-connectivity), handle error cases, network failures
+* [x] User can take perform retweet action on a tweet
 
 The following **bonus** features are implemented:
 
@@ -36,18 +48,26 @@ The following **bonus** features are implemented:
 The following **additional** features are implemented:
 
 * [x] Clicking ActionBar icon in timeline will scroll to top
-* [x] User can **select "retweet" icon from detail view to retweet a tweet**
-* [x] Check for network before fetching or pushing to server
-* [x] ViewHolder Pattern for the custom adapter
+* [x] Integrated the [SmartFragmentStatePagerAdapter](https://gist.github.com/nesquena/318b6930aac3a56f96a4)
+* [x] Used a custom relative layout to show banner image in the profile view
 
 **TODO**
-* [ ] User can **open the twitter app offline and see last loaded tweets**. Persisted in SQLite tweets are refreshed on every application launch. While "live data" is displayed when app can get it from Twitter API, it is also saved for use in offline mode.
+* [ ] User can view following / followers list through the profile
+* [ ] When a network request is sent, user sees an [indeterminate progress indicator](http://guides.codepath.com/android/Handling-ProgressBars#progress-within-actionbar)
+* [ ] User can **"reply" to any tweet on their home timeline**
+  * [ ] The user that wrote the original tweet is automatically "@" replied in compose
+* [ ] User can click on a tweet to be **taken to a "detail view"** of that tweet
+ * [ ] User can take perform favorite (and unfavorite) actions on a tweet
+* [ ] Improve the user interface and theme the app to feel twitter branded
+* [ ] User can **search for tweets matching a particular query** and see results
+* [ ] User can view their direct messages (or send new ones)
+* [ ] Convert the header section in Profile View to a fragment
 
 ## Video Walkthrough 
 
 Here's a walkthrough of implemented user stories:
 
-![demo](VideoWalkthrough/walkthrough.gif)
+![demo](VideoWalkthrough/walkthrough2.gif)
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
